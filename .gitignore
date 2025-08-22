@@ -32,3 +32,7 @@ ios/build/
 # Misc
 .DS_Store
 *.tmp
+
+mobile/mobileApp/node_modules/
+mobile/mobileApp/.expo/
+mobile/mobileApp/.git/
