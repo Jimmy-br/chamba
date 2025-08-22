@@ -1,0 +1,34 @@
+# Dependencias
+node_modules/
+yarn.lock
+package-lock.json
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Metro
+.metro/
+.expo/
+
+# Android
+android/.gradle/
+android/app/build/
+*.apk
+*.keystore
+
+# iOS
+ios/Pods/
+ios/build/
+*.xcworkspace
+*.xcuserstate
+*.xcuserdata
+
+# VS Code
+.vscode/
+
+# Misc
+.DS_Store
+*.tmp
