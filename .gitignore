@@ -16,6 +16,7 @@ yarn-error.log*
 # Android
 android/.gradle/
 android/app/build/
+android/local.properties/
 *.apk
 *.keystore
 
@@ -33,6 +34,10 @@ ios/build/
 .DS_Store
 *.tmp
 
+# Variables de entorno
+backend/.env
+
+# Subproyecto mobile
 mobile/mobileApp/node_modules/
 mobile/mobileApp/.expo/
 mobile/mobileApp/.git/
