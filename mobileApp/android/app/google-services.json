@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "491438116314",
+    "project_id": "chamba-app-6dcc4",
+    "storage_bucket": "chamba-app-6dcc4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:491438116314:android:d7963d91ff727698dd84e3",
+        "android_client_info": {
+          "package_name": "com.chamba.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDD8MIexR0v2jCas0P_Auco_3e6gLSps8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
