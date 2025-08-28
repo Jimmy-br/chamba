@@ -77,3 +77,6 @@ yarn-error.log
 # Variables de entorno para mobile
 .env
 .env.*
+
+android/app/google-services.json
+ios/mobileApp/GoogleService-Info.plist
