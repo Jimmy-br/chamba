@@ -1,4 +1,4 @@
-package com.chamba.app
+package com.mobileapp
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -1,37 +1,32 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import auth from '@react-native-firebase/auth';
+import messaging from '@react-native-firebase/messaging';
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+  useEffect(() => {
+    // Verificar que Firebase Auth funciona
+    const unsubscribe = auth().onAuthStateChanged(user => {
+      if (user) {
+        console.log('Usuario logueado:', user.email);
+      } else {
+        console.log('No hay usuario logueado');
+      }
+    });
 
-  return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
-  );
-}
+    // Verificar que Firebase Messaging funciona (solo Android)
+    messaging()
+      .getToken()
+      .then(token => {
+        console.log('Token FCM:', token);
+      });
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
+    return unsubscribe;
+  }, []);
 
   return (
     <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
+      <Text style={styles.text}>🚀 Chamba App con Firebase funcionando</Text>
     </View>
   );
 }
@@ -39,6 +34,11 @@ function AppContent() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 18,
   },
 });
 

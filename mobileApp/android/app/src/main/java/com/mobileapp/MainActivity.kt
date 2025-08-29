@@ -1,4 +1,4 @@
-package com.chamba.app
+package com.mobileapp
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
