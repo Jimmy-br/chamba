@@ -1,20 +1,27 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import auth from '@react-native-firebase/auth';
+import React, { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import messaging from '@react-native-firebase/messaging';
+import { enableScreens } from 'react-native-screens';
+import RootNavigator from './src/navigation/RootNavigator.tsx';
+
+enableScreens(true);
 
 function App() {
+  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+
   useEffect(() => {
-    // Verificar que Firebase Auth funciona
-    const unsubscribe = auth().onAuthStateChanged(user => {
-      if (user) {
-        console.log('Usuario logueado:', user.email);
+    // Escuchar cambios de sesión
+    const unsubscribe = auth().onAuthStateChanged(currentUser => {
+      setUser(currentUser);
+      if (currentUser) {
+        console.log('Usuario logueado:', currentUser.email);
       } else {
         console.log('No hay usuario logueado');
       }
     });
 
-    // Verificar que Firebase Messaging funciona (solo Android)
+    //Verificar token de notificaciones (FCM)
     messaging()
       .getToken()
       .then(token => {
@@ -25,21 +32,10 @@ function App() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>🚀 Chamba App con Firebase funcionando</Text>
-    </View>
+    <NavigationContainer>
+        <RootNavigator user={user} />
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 18,
-  },
-});
 
 export default App;
