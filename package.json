@@ -16,5 +16,8 @@
     "url": "https://github.com/Jimmy-br/chamba/issues"
   },
   "homepage": "https://github.com/Jimmy-br/chamba#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@react-native-community/cli": "^20.0.1"
+  }
 }

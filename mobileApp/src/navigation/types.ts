@@ -1,6 +1,8 @@
 export type AuthStackParamList = {
   Login: undefined;
-  Register: undefined;
+  RoleSelection: undefined;
+  RegisterClient: undefined;
+  RegisterWorker: undefined;
   ForgotPassword: undefined;
 };
 

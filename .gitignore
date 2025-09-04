@@ -38,9 +38,9 @@ ios/build/
 backend/.env
 
 # Subproyecto mobile
-mobile/mobileApp/node_modules/
-mobile/mobileApp/.expo/
-mobile/mobileApp/.git/
+mobileApp/node_modules/
+mobileApp/.expo/
+mobileApp/.git/
 
 # Backend
 backend/src/config/chamba-app-6dcc4-firebase-adminsdk-fbsvc-72c577a9ad.json
