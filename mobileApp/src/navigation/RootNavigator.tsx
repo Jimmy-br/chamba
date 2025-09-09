@@ -1,25 +1,33 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AuthStack from './AuthStack.tsx';
-import MainTabs from './MainTabs.tsx';
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
-
-type RootNavigatorProps = {
-  user: FirebaseAuthTypes.User | null;
-};
+import { useAuth } from '../context/AuthContext';
+import RoleSelectionScreen from '../screens/Auth/RoleSelectionScreen';
+import LoginScreen from '../screens/Auth/LoginScreen';
+import HomeScreen from '../screens/HomeScreen';
+import RegisterClientScreen from '../screens/Auth/RegisterClientScreen';
+import ForgotPasswordScreen from '../screens/Auth/ForgotPasswordScreen';
+import RegisterWorkerScreen from '../screens/Auth/RegisterWorkerScreen';
 
 const Stack = createNativeStackNavigator();
 
-const RootNavigator: React.FC<RootNavigatorProps> = ({ user }) => {
+export default function RootNavigator() {
+  const { user } = useAuth();
+
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {user ? (
-        <Stack.Screen name="MainApp" component={MainTabs} />
-      ) : (
-        <Stack.Screen name="Auth" component={AuthStack} />
-      )}
+    <Stack.Navigator>
+      {
+        user ? (
+          <Stack.Screen name="Home" component={HomeScreen} />
+        ) : (
+          <>
+            <Stack.Screen name="RoleSelection" component={RoleSelectionScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="RegisterClient" component={RegisterClientScreen} />
+            <Stack.Screen name="RegisterWorker" component={RegisterWorkerScreen} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          </>
+        )
+      }
     </Stack.Navigator>
   );
-};
-
-export default RootNavigator;
+}

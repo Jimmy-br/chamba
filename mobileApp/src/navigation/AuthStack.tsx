@@ -12,31 +12,11 @@ const Stack = createNativeStackNavigator<AuthStackParamList>();
 export default function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen
-        name="RoleSelection"
-        component={RoleSelectionScreen}
-        options={{ title: 'Selecciona rol' }}
-      />
-      <Stack.Screen
-        name="RegisterClient"
-        component={RegisterClientScreen}
-        options={{ title: 'Registro cliente' }}
-      />
-      <Stack.Screen
-        name="RegisterWorker"
-        component={RegisterWorkerScreen}
-        options={{ title: 'Registro trabajador' }}
-      />
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ title: 'Iniciar sesión' }}
-      />
-      <Stack.Screen
-        name="ForgotPassword"
-        component={ForgotPasswordScreen}
-        options={{ title: 'Recuperar contraseña' }}
-      />
+      <Stack.Screen name="RoleSelection" component={RoleSelectionScreen} options={{ title: 'Selecciona rol' }} />
+      <Stack.Screen name="RegisterClient" component={RegisterClientScreen} options={{ title: 'Registro cliente' }} />
+      <Stack.Screen name="RegisterWorker" component={RegisterWorkerScreen} options={{ title: 'Registro trabajador' }} />
+      <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Iniciar sesión' }} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ title: 'Recuperar contraseña' }} />
     </Stack.Navigator>
   );
 }
