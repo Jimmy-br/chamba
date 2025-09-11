@@ -4,9 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import RoleSelectionScreen from '../screens/Auth/RoleSelectionScreen';
 import LoginScreen from '../screens/Auth/LoginScreen';
 import HomeScreen from '../screens/HomeScreen';
-import RegisterClientScreen from '../screens/Auth/RegisterClientScreen';
 import ForgotPasswordScreen from '../screens/Auth/ForgotPasswordScreen';
-import RegisterWorkerScreen from '../screens/Auth/RegisterWorkerScreen';
+import RegisterScreen from '../screens/Auth/RegisterScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,8 +21,7 @@ export default function RootNavigator() {
           <>
             <Stack.Screen name="RoleSelection" component={RoleSelectionScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="RegisterClient" component={RegisterClientScreen} />
-            <Stack.Screen name="RegisterWorker" component={RegisterWorkerScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
           </>
         )

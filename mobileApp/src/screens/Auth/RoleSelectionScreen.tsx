@@ -24,14 +24,14 @@ export default function RoleSelectionScreen({ navigation }: any) {
         <View style={styles.buttonsContainer}>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: '#00bcd4' }]}
-            onPress={() => navigation.navigate('RegisterClient')}
+            onPress={() => navigation.navigate('Register', { role: 'client' })}
           >
             <Text style={styles.buttonText}>Soy cliente</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, { backgroundColor: '#00bcd4' }]}
-            onPress={() => navigation.navigate('RegisterWorker')}
+            onPress={() => navigation.navigate('Register', { role: 'worker' })}
           >
             <Text style={styles.buttonText}>Soy trabajador</Text>
           </TouchableOpacity>

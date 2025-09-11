@@ -14,7 +14,8 @@ import firestore from '@react-native-firebase/firestore';
 import { useAuth } from '../../context/AuthContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-export default function RegisterClientScreen({ navigation }: any) {
+export default function RegisterScreen({ navigation, route }: any) {
+  const { role } = route.params; // "client" o "worker"
   const { setUser } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,6 +23,12 @@ export default function RegisterClientScreen({ navigation }: any) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
+
+  // Validaciones de contraseña
+  const isMinLength = password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
 
   const handleRegister = async () => {
     if (!email || !password || !confirmPass) {
@@ -39,12 +46,12 @@ export default function RegisterClientScreen({ navigation }: any) {
 
       await firestore().collection('users').doc(userCredential.user.uid).set({
         email,
-        role: 'client',
+        role,
         createdAt: firestore.FieldValue.serverTimestamp(),
       });
 
       setUser(userCredential.user);
-      Alert.alert('Éxito', 'Cuenta de cliente creada correctamente');
+      Alert.alert('Éxito', `Cuenta de ${role === 'client' ? 'cliente' : 'trabajador'} creada correctamente`);
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
@@ -54,16 +61,24 @@ export default function RegisterClientScreen({ navigation }: any) {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: '#1b0000' }}>
-      {/* Imagen de portada */}
+      {/* Imagen de portada distinta según rol */}
       <ImageBackground
-        source={{ uri: 'https://res.cloudinary.com/<tu_cloud_name>/image/upload/v1725900000/ClientHeader.png' }}
+        source={{
+          uri: role === 'client'
+            ? 'https://res.cloudinary.com/<tu_cloud_name>/image/upload/v1725900000/ClientHeader.png'
+            : 'https://res.cloudinary.com/<tu_cloud_name>/image/upload/v1725900000/WorkerHeader.png'
+        }}
         style={styles.image}
       >
         <View style={styles.overlay} />
       </ImageBackground>
 
       <View style={styles.container}>
-        <Text style={styles.title}>Ingresa para ofrecer un servicio</Text>
+        <Text style={styles.title}>
+          {role === 'client'
+            ? 'Regístrate para contratar servicios'
+            : 'Regístrate para ofrecer un servicio'}
+        </Text>
 
         {/* Botón Google */}
         <TouchableOpacity style={styles.googleBtn}>
@@ -72,7 +87,7 @@ export default function RegisterClientScreen({ navigation }: any) {
 
         <Text style={styles.separator}>o continúa con</Text>
 
-        {/* Inputs */}
+        {/* Correo */}
         <Text style={styles.label}>Correo electrónico</Text>
         <TextInput
           style={styles.input}
@@ -84,11 +99,12 @@ export default function RegisterClientScreen({ navigation }: any) {
           keyboardType="email-address"
         />
 
-         {/* Contraseña */}
+        {/* Contraseña */}
         <Text style={styles.label}>Contraseña</Text>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.inputWithIcon}
+            placeholder="Ingresa tu contraseña"
             placeholderTextColor="#aaa"
             secureTextEntry={!showPassword}
             value={password}
@@ -103,16 +119,32 @@ export default function RegisterClientScreen({ navigation }: any) {
         </View>
 
         {/* Validaciones visibles */}
-        <Text style={styles.validation}>- Al menos 8 caracteres</Text>
-        <Text style={styles.validation}>- Al menos 1 letra mayúscula</Text>
-        <Text style={styles.validation}>- Al menos 1 letra minúscula</Text>
-        <Text style={styles.validation}>- Al menos 1 número</Text>
+        <View style={styles.validationItem}>
+          {isMinLength && <Icon name="check" size={16} color="lightgreen" style={styles.checkIcon} />}
+          <Text style={[styles.validation, isMinLength && styles.valid]}>- Al menos 8 caracteres</Text>
+        </View>
+
+        <View style={styles.validationItem}>
+          {hasUppercase && <Icon name="check" size={16} color="lightgreen" style={styles.checkIcon} />}
+          <Text style={[styles.validation, hasUppercase && styles.valid]}>- Al menos 1 letra mayúscula</Text>
+        </View>
+
+        <View style={styles.validationItem}>
+          {hasLowercase && <Icon name="check" size={16} color="lightgreen" style={styles.checkIcon} />}
+          <Text style={[styles.validation, hasLowercase && styles.valid]}>- Al menos 1 letra minúscula</Text>
+        </View>
+
+        <View style={styles.validationItem}>
+          {hasNumber && <Icon name="check" size={16} color="lightgreen" style={styles.checkIcon} />}
+          <Text style={[styles.validation, hasNumber && styles.valid]}>- Al menos 1 número</Text>
+        </View>
 
         {/* Confirmar contraseña */}
         <Text style={styles.label}>Confirmar contraseña</Text>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.inputWithIcon}
+            placeholder="Repite tu contraseña"
             placeholderTextColor="#aaa"
             secureTextEntry={!showConfirmPass}
             value={confirmPass}
@@ -198,5 +230,20 @@ const styles = StyleSheet.create({
 
   iconContainer: {
     paddingHorizontal: 10,
+  },
+
+  valid: {
+    color: 'lightgreen',
+  },  
+
+  validationItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+    marginLeft: 5,
+  },
+
+  checkIcon: {
+    marginRight: 6,
   },
 });
