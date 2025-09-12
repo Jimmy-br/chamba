@@ -12,7 +12,20 @@
           "package_name": "com.chamba.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "491438116314-bs3l8ieiq2g7hc5mipc78e5u0j1dcjle.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chamba.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "491438116314-39odlgntpriqb9uk2obghvbbl1g0dibs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBDD8MIexR0v2jCas0P_Auco_3e6gLSps8"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "491438116314-39odlgntpriqb9uk2obghvbbl1g0dibs.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "491438116314-d5lkr2jdl8sp3hv2s8a8ea8cn59fd6nm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.chamba.app"
+              }
+            }
+          ]
         }
       }
     }
