@@ -18,3 +18,5 @@ export const getImageUrl = (publicId: string, width = 300, height = 200) => {
     .resize(fill().width(width).height(height))
     .toURL();
 };
+
+console.log("Cloudinary Cloud Name:", CLOUDINARY_CLOUD_NAME);

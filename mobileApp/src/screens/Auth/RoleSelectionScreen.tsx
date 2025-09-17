@@ -45,7 +45,7 @@ export default function RoleSelectionScreen({ navigation }: any) {
         </View>
 
         <TouchableOpacity onPress={() => console.log('Saltado')}>
-          <Text style={styles.skip}>Saltar</Text>
+          <Text style={styles.skip}>Cotinuar como invitado</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

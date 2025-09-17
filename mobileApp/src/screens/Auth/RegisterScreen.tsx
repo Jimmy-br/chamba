@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useState } from 'react';
 import {
   View, 
@@ -10,12 +11,13 @@ import {
   ImageBackground
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
 import { useAuth } from '../../context/AuthContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import axios from 'axios';
+import { BACKEND_URL } from '@env';
 
 export default function RegisterScreen({ navigation, route }: any) {
-  const { role } = route.params; // "client" o "worker"
+  const { role } = route.params;
   const { setUser } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -42,21 +44,29 @@ export default function RegisterScreen({ navigation, route }: any) {
 
     try {
       setLoading(true);
-      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
 
-      await firestore().collection('users').doc(userCredential.user.uid).set({
-        email,
+      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+      const idToken = await userCredential.user.getIdToken();
+
+      const response = await axios.post(`${BACKEND_URL}/api/users`, {
         role,
-        createdAt: firestore.FieldValue.serverTimestamp(),
+      }, {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        }
       });
 
-      setUser(userCredential.user);
-      Alert.alert('Éxito', `Cuenta de ${role === 'client' ? 'cliente' : 'trabajador'} creada correctamente`);
+      console.log('Respuesta del backend:', response.data);
+
+      setUser(response.data);
+      Alert.alert('Éxito', 'Usuario creado');
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      console.error('Error en registro:', error.response?.data || error.message);
+      Alert.alert('Error', error.response?.data?.message || 'Error al registrar usuario');
     } finally {
       setLoading(false);
     }
+
   };
 
   return (

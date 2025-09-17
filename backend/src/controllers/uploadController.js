@@ -10,7 +10,6 @@ cloudinary.v2.config({
 
 export const getUploadSignature = (req, res) => {
   try {
-    // Genera una firma para subir imágenes de forma segura
     const timestamp = Math.floor(Date.now() / 1000);
     const signature = cloudinary.v2.utils.api_sign_request(
       { timestamp, upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET },
