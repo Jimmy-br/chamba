@@ -1,20 +1,41 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
+type AppUser =
+  | (FirebaseAuthTypes.User & { role?: 'client' | 'worker' | 'admin' })
+  | { role: 'guest' }
+  | null;
+
 type AuthContextType = {
-  user: FirebaseAuthTypes.User | null;
-  setUser: (user: FirebaseAuthTypes.User | null) => void;
+  user: AppUser;
+  setUser: (user: AppUser) => void;
   signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const [user, setUser] = useState<AppUser>(null);
+
+  // 🔹 Sincroniza automáticamente el usuario de Firebase con el contexto
+  useEffect(() => {
+    const unsubscribe = auth().onAuthStateChanged(async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser); // rol se agrega luego en el flujo de registro
+      } else {
+        setUser(null);
+      }
+    });
+    return unsubscribe;
+  }, []);
 
   const signOut = async () => {
-    await auth().signOut();
-    setUser(null);
+    if (user && user.role === 'guest') {
+      setUser(null);
+    } else {
+      await auth().signOut();
+      setUser(null);
+    }
   };
 
   return (
@@ -31,3 +52,11 @@ export const useAuth = () => {
   }
   return context;
 };
+
+export function useLoggedUser(): FirebaseAuthTypes.User & { role?: "client" | "worker" | "admin" } {
+  const { user } = useAuth();
+  if (!user || !('uid' in user)) {
+    throw new Error("User is not logged in");
+  }
+  return user;
+}

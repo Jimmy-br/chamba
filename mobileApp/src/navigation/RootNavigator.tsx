@@ -1,11 +1,9 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
-import RoleSelectionScreen from '../screens/Auth/RoleSelectionScreen';
-import LoginScreen from '../screens/Auth/LoginScreen';
-import HomeScreen from '../screens/HomeScreen';
-import ForgotPasswordScreen from '../screens/Auth/ForgotPasswordScreen';
-import RegisterScreen from '../screens/Auth/RegisterScreen';
+import AuthStack from './AuthStack';
+import MainTabs from './MainTabs';
+import OnboardingStack from './OnboardingStack';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,19 +11,19 @@ export default function RootNavigator() {
   const { user } = useAuth();
 
   return (
-    <Stack.Navigator>
-      {
-        user ? (
-          <Stack.Screen name="Home" component={HomeScreen} />
+    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Auth">
+      {user ? (
+        user.role === 'client' || user.role === 'worker' ? (
+          // Flujo post-registro -> usar OnboardingStack
+          <Stack.Screen name="Onboarding" component={OnboardingStack} />
         ) : (
-          <>
-            <Stack.Screen name="RoleSelection" component={RoleSelectionScreen} />
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-          </>
+          // Invitado o admin -> directo MainTabs
+          <Stack.Screen name="Main" component={MainTabs} />
         )
-      }
+      ) : (
+        // Si no hay usuario -> flujo de auth
+        <Stack.Screen name="Auth" component={AuthStack} />
+      )}
     </Stack.Navigator>
   );
 }

@@ -1,36 +1,39 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useState } from 'react';
 import {
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
   Alert,
   ScrollView,
-  ImageBackground
+  ImageBackground,
+  TextInput
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import { useAuth } from '../../context/AuthContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import { BACKEND_URL } from '@env';
+import { globalStyles } from '../../styles/globalStyles';
 
 export default function RegisterScreen({ navigation, route }: any) {
   const { role } = route.params;
   const { setUser } = useAuth();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPass, setConfirmPass] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPass, setShowConfirmPass] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Validaciones de contraseña
   const isMinLength = password.length >= 8;
   const hasUppercase = /[A-Z]/.test(password);
   const hasLowercase = /[a-z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
+  const passwordsMatch = confirmPass.length > 0 && password === confirmPass;
 
   const handleRegister = async () => {
     if (!email || !password || !confirmPass) {
@@ -45,28 +48,49 @@ export default function RegisterScreen({ navigation, route }: any) {
     try {
       setLoading(true);
 
+      // 1Crear el usuario en Firebase
       const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-      const idToken = await userCredential.user.getIdToken();
+      const firebaseUser = userCredential.user;
+      const idToken = await firebaseUser.getIdToken();
 
-      const response = await axios.post(`${BACKEND_URL}/api/users`, {
-        role,
-      }, {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        }
-      });
+      // Registrar el usuario en el backend con su rol
+      const response = await axios.post(
+        `${BACKEND_URL}/api/users`,
+        { role },
+        { headers: { Authorization: `Bearer ${idToken}` } }
+      );
 
       console.log('Respuesta del backend:', response.data);
 
-      setUser(response.data);
-      Alert.alert('Éxito', 'Usuario creado');
+      // Actualizar el contexto global con el usuario autenticado
+      setUser({...firebaseUser, role: role});
+      setTimeout(() => {
+        navigation.navigate('Onboarding', { screen: 'UserDetails' });
+      }, 300);
+
+      Alert.alert('Éxito', 'Usuario creado correctamente');
+
+
     } catch (error: any) {
-      console.error('Error en registro:', error.response?.data || error.message);
-      Alert.alert('Error', error.response?.data?.message || 'Error al registrar usuario');
+      console.error('Error en registro:', error);
+
+      // Detectar errores comunes de Firebase
+      if (error.code === 'auth/email-already-in-use') {
+        Alert.alert('Correo en uso', 'Ya existe una cuenta registrada con este correo electrónico.');
+      } else if (error.code === 'auth/invalid-email') {
+        Alert.alert('Correo inválido', 'El formato del correo no es válido.');
+      } else if (error.code === 'auth/weak-password') {
+        Alert.alert('Contraseña débil', 'La contraseña debe tener al menos 6 caracteres.');
+      } else {
+        // Errores generales o del backend
+        Alert.alert(
+          'Error',
+          error.response?.data?.message || 'Error al registrar usuario. Inténtelo de nuevo.'
+        );
+      }
     } finally {
       setLoading(false);
     }
-
   };
 
   return (
@@ -98,33 +122,36 @@ export default function RegisterScreen({ navigation, route }: any) {
         <Text style={styles.separator}>o continúa con</Text>
 
         {/* Correo */}
-        <Text style={styles.label}>Correo electrónico</Text>
+        <Text style={globalStyles.label}>Correo electrónico</Text>
         <TextInput
-          style={styles.input}
           placeholder="correo@ejemplo.com"
-          placeholderTextColor="#aaa"
           value={email}
           onChangeText={setEmail}
-          autoCapitalize="none"
+          style={globalStyles.input}
           keyboardType="email-address"
+          autoCapitalize="none"
         />
 
         {/* Contraseña */}
-        <Text style={styles.label}>Contraseña</Text>
-        <View style={styles.inputContainer}>
+        <Text style={globalStyles.label}>Contraseña</Text>
+        <View style={globalStyles.inputContainer}>
           <TextInput
-            style={styles.inputWithIcon}
+            style={globalStyles.inputWithIcon}
             placeholder="Ingresa tu contraseña"
-            placeholderTextColor="#aaa"
-            secureTextEntry={!showPassword}
             value={password}
             onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            autoCapitalize="none"
           />
           <TouchableOpacity
             style={styles.iconContainer}
             onPress={() => setShowPassword(!showPassword)}
           >
-            <Icon name={showPassword ? "visibility" : "visibility-off"} size={22} color="#fff" />
+            <Icon
+              name={showPassword ? 'visibility' : 'visibility-off'}
+              size={22}
+              color="#fff"
+            />
           </TouchableOpacity>
         </View>
 
@@ -150,22 +177,39 @@ export default function RegisterScreen({ navigation, route }: any) {
         </View>
 
         {/* Confirmar contraseña */}
-        <Text style={styles.label}>Confirmar contraseña</Text>
-        <View style={styles.inputContainer}>
+        <Text style={globalStyles.label}>Confirmar contraseña</Text>
+        <View style={globalStyles.inputContainer}>
           <TextInput
-            style={styles.inputWithIcon}
+            style={globalStyles.inputWithIcon}
             placeholder="Repite tu contraseña"
-            placeholderTextColor="#aaa"
-            secureTextEntry={!showConfirmPass}
             value={confirmPass}
             onChangeText={setConfirmPass}
+            secureTextEntry={!showConfirmPassword}
+            autoCapitalize="none"
           />
           <TouchableOpacity
             style={styles.iconContainer}
-            onPress={() => setShowConfirmPass(!showConfirmPass)}
+            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
           >
-            <Icon name={showConfirmPass ? "visibility" : "visibility-off"} size={22} color="#fff" />
+            <Icon
+              name={showConfirmPassword ? 'visibility' : 'visibility-off'}
+              size={22}
+              color="#fff"
+            />
           </TouchableOpacity>
+        </View>
+
+        <View style={styles.validationItem}>
+          {passwordsMatch && (
+            <Icon name="check" size={16} color="lightgreen" style={styles.checkIcon} />
+          )}
+          <Text
+            style={[
+              styles.validation,
+              passwordsMatch && styles.valid
+            ]}
+          > - Las contraseñas deben coincidir
+          </Text>
         </View>
 
         {/* Botón Crear cuenta */}
@@ -205,55 +249,8 @@ const styles = StyleSheet.create({
   link: { color: '#00bcd4', textAlign: 'center', marginBottom: 20 },
   inlineText: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 10 },
   subtitle: { fontSize: 14, color: '#ddd', textAlign: 'center', marginBottom: 20 },
-
-  label: {
-    color: '#fff',
-    fontSize: 15,
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 5,
-  },
-
-  input: { 
-    borderWidth: 1, 
-    borderColor: '#fff', 
-    borderRadius: 8, 
-    padding: 12, 
-    marginBottom: 12, 
-    color: '#fff' 
-  },
-
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#fff',
-    borderRadius: 6,
-    marginBottom: 15,
-  },
-
-  inputWithIcon: {
-    flex: 1,
-    padding: 10,
-    color: '#fff',
-  },
-
-  iconContainer: {
-    paddingHorizontal: 10,
-  },
-
-  valid: {
-    color: 'lightgreen',
-  },  
-
-  validationItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-    marginLeft: 5,
-  },
-
-  checkIcon: {
-    marginRight: 6,
-  },
+  iconContainer: { paddingHorizontal: 10 },
+  valid: { color: 'lightgreen' },
+  validationItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 4, marginLeft: 5 },
+  checkIcon: { marginRight: 6 },
 });

@@ -1,8 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
 import { getImageUrl } from '../../config/cloudinary';
+import { useAuth } from '../../context/AuthContext';
 
 export default function RoleSelectionScreen({ navigation }: any) {
+   const { setUser } = useAuth();
+
+   const handleGuest = () => {
+    setUser({ role: 'guest' });
+  };
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: '#000' }}>
       {/* Imagen en la parte superior */}
@@ -44,8 +51,8 @@ export default function RoleSelectionScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => console.log('Saltado')}>
-          <Text style={styles.skip}>Cotinuar como invitado</Text>
+        <TouchableOpacity onPress={handleGuest}>
+          <Text style={styles.skip}>Continuar como invitado</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
