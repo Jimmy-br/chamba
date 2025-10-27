@@ -35,7 +35,7 @@ exports.getUserByUid = async (req, res) => {
   const { uid } = req;
   try {
     const [rows] = await pool.query(
-      "SELECT id, uid_firebase, email, role, firstName, lastName FROM users WHERE uid_firebase = ?",
+      "SELECT id, uid, email, role, firstName, lastName FROM users WHERE uid = ?",
       [uid]
     );
 
@@ -53,12 +53,41 @@ exports.getUserByUid = async (req, res) => {
 // PUT Actualizar usuario por uid
 exports.updateUser = async (req, res) => {
   const { uid } = req;
-  const { firstName, lastName, role } = req.body;
+  const {
+    firstName,
+    lastName,
+    secondLastName,
+    idType,
+    idNumber,
+    phone,
+    birthDate,
+    isOver18
+  } = req.body;
 
   try {
     const [result] = await pool.query(
-      "UPDATE users SET firstName = ?, lastName = ?, role = ?, updatedAt = NOW() WHERE uid_firebase = ?",
-      [firstName || null, lastName || null, role || null, uid]
+      `UPDATE users
+       SET firstName = ?, 
+           lastName = ?, 
+           secondLastName = ?, 
+           idType = ?, 
+           idNumber = ?, 
+           phone = ?, 
+           birthDate = ?, 
+           isOver18 = ?, 
+           updatedAt = NOW()
+       WHERE uid = ?`,
+      [
+        firstName || null,
+        lastName || null,
+        secondLastName || null,
+        idType || null,
+        idNumber || null,
+        phone || null,
+        birthDate || null,
+        isOver18 ? 1 : 0,
+        uid
+      ]
     );
 
     if (result.affectedRows === 0) {
@@ -69,5 +98,29 @@ exports.updateUser = async (req, res) => {
   } catch (error) {
     console.error("Error actualizando usuario:", error);
     res.status(500).json({ message: "Error actualizando usuario" });
+  }
+};
+
+// PUT /api/users/:uid/location
+exports.updateUserLocation = async (req, res) => {
+  const { uid } = req;
+  const { province, canton, district, exactAddress } = req.body;
+
+  try {
+    const [result] = await pool.query(
+      `UPDATE users
+       SET province = ?, canton = ?, district = ?, exactAddress = ?, updatedAt = NOW()
+       WHERE uid = ?`,
+      [province, canton, district, exactAddress, uid]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    res.json({ message: 'Ubicación actualizada correctamente' });
+  } catch (error) {
+    console.error('Error actualizando ubicación:', error);
+    res.status(500).json({ message: 'Error actualizando ubicación' });
   }
 };

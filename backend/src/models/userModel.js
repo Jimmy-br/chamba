@@ -4,13 +4,13 @@ const User = {
   create: (userData, callback) => {
     const sql = `
       INSERT INTO users 
-      (uid_firebase, firstName, lastName, email, role, accountStatus, createdAt, updatedAt) 
+      (uid, firstName, lastName, email, role, accountStatus, createdAt, updatedAt) 
       VALUES (?, ?, ?, ?, ?, 'pending', NOW(), NOW())
     `;
     db.query(
       sql,
       [
-        userData.uid_firebase,
+        userData.uid,
         userData.firstName,
         userData.lastName,
         userData.email,
@@ -21,7 +21,7 @@ const User = {
   },
 
   findByUid: (uid, callback) => {
-    const sql = 'SELECT * FROM users WHERE uid_firebase = ?';
+    const sql = 'SELECT * FROM users WHERE uid = ?';
     db.query(sql, [uid], callback);
   }
 };
